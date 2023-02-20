@@ -32,8 +32,8 @@ def upload_file():
         
         if file and allowed_file(file.filename):
             # Create uploads folder if not exists
-            if not os.path.exists(UPLOAD_FOLDER):
-                os.makedirs(UPLOAD_FOLDER)
+            if not os.path.exists(os.path.join(BASEDIR, UPLOAD_FOLDER)):
+                os.makedirs(os.path.join(BASEDIR, UPLOAD_FOLDER))
 
             filename = secure_filename(file.filename)
             file.save(os.path.join(BASEDIR, app.config['UPLOAD_FOLDER'], filename))
