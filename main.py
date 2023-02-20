@@ -14,6 +14,13 @@ app: Flask = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
+
+def fixed_path(path) -> str:
+    """ Return fixed path from 'path' """
+
+    return os.path.join(BASEDIR, path)
+
+
 def allowed_file(filename: str) -> bool:
     """ True if filename has correct extension """
 
@@ -32,8 +39,8 @@ def upload_file():
         
         if file and allowed_file(file.filename):
             # Create uploads folder if not exists
-            if not os.path.exists(os.path.join(BASEDIR, UPLOAD_FOLDER)):
-                os.makedirs(os.path.join(BASEDIR, UPLOAD_FOLDER))
+            if not os.path.exists(fixed_path(app.config['UPLOAD_FOLDER'])):
+                os.makedirs(fixed_path(app.config['UPLOAD_FOLDER']))
 
             filename = secure_filename(file.filename)
             file.save(os.path.join(BASEDIR, app.config['UPLOAD_FOLDER'], filename))
@@ -46,5 +53,5 @@ def upload_file():
 
 @app.get('/download_uploads')
 def download_uploads():
-    shutil.make_archive(UPLOAD_FOLDER, 'zip', os.path.join(BASEDIR, UPLOAD_FOLDER))
-    return send_file(os.path.join(BASEDIR, f'{UPLOAD_FOLDER}.zip'), as_attachment=True)
+    shutil.make_archive(fixed_path(app.config['UPLOAD_FOLDER']), 'zip', fixed_path(app.config['UPLOAD_FOLDER']))
+    return send_file(fixed_path(f'{app.config["UPLOAD_FOLDER"]}.zip'), as_attachment=True)
